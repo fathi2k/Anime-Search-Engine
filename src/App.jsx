@@ -3,7 +3,7 @@ import { dataHero } from "./api/dataHero"
 import { useState } from "react";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
-import { useEffect,useRef } from "react";
+import { useRef } from "react";
 
 
 
@@ -90,7 +90,7 @@ useGSAP(()=>{
  gsap.from(refCard.current,{
         y : 200,
         duration : 1,
-        rotate : '360'
+        
       })
 
 
