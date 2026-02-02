@@ -1,8 +1,9 @@
 import CardHero from "./components/CardHero"
 import { dataHero } from "./api/dataHero"
 import { useState } from "react";
-
-
+import gsap from "gsap";
+import { useGSAP } from "@gsap/react";
+import { useEffect,useRef } from "react";
 
 
 
@@ -11,7 +12,7 @@ const [inputSearch,setInputSearch] = useState('')
 const [dataCharacter,setDataCharacter] = useState([]);
 const [errorPopUp,setErrorPopUp] = useState('');
 
-
+const refCard = useRef();
 
 const handleClick =  async ()=>{
       const data = await dataHero();  
@@ -19,7 +20,7 @@ const handleClick =  async ()=>{
 
       if (inputSearch.length < 1){
 
-            setErrorPopUp('sila masukkan nama character !')
+            setErrorPopUp('letak jee number random !')
       }else{
 
 
@@ -30,23 +31,28 @@ const handleClick =  async ()=>{
 
           
         
-
+//untuk tengok kat console //
        
-        if (jumpaData){
-          console.log('dah jumpa !');
-          console.log(jumpaData);
+        // if (jumpaData){
+        //   console.log('dah jumpa !');
+        //   console.log(jumpaData);
           
-        }else{
-          console.log('tak jumpa X');
+        // }else{
+        //   console.log('tak jumpa X');
           
-        }
+        // }
 
-    
+    if (jumpaData){
+
+ setDataCharacter([jumpaData]); //mapping perlu array
+    }else{
+      setErrorPopUp('number tak dikenali')
+    }
         
           // console.log(data.data);
         setInputSearch('')
 
-        setDataCharacter([jumpaData]); //mapping perlu array
+       
 
         // console.log(data.data[0]);
         
@@ -54,8 +60,78 @@ const handleClick =  async ()=>{
 
       }
 
+
+
+   
        
 }
+
+// useEffect(()=>{
+//      //animation//
+
+
+
+// },[])
+
+
+//animation bila result keluar
+
+useGSAP(()=>{
+
+  if (dataCharacter.length > 0){
+        
+  gsap.from('#kotak-center',{
+    x : 200,
+    duration : 1
+  })
+
+  if (refCard.current){
+
+ gsap.from(refCard.current,{
+        y : 200,
+        duration : 1,
+        rotate : '360'
+      })
+
+
+  }
+
+ 
+  }else{
+
+
+     gsap.from('#kotak-center',{
+    y : 200,
+    duration : 1
+  })
+
+
+  }
+
+},[dataCharacter])
+
+
+
+// //animation result //
+
+// useGSAP(()=>{
+  
+    
+// },[])
+
+
+
+// useGSAP(()=>{
+//       gsap.to('#kotak-center',{
+//         x : -200
+//       })
+// },[dataCharacter])
+
+
+
+
+ 
+
 
 
 //enter//
@@ -75,21 +151,29 @@ const handleClick =  async ()=>{
 
 
   return (
-        <div className="flex flex-col justify-center items-center h-screen">
-               <div className="flex flex-col items-center">
-                   <h1 className="text-[50px] font-bold">Anime Character Search </h1>
+        <div className="flex  justify-center items-center h-screen lg:gap-[10%] md:gap-[5%]">
+               <div id="kotak-center" className="flex flex-col items-center  bg-white/60  p-2 h-[500px] justify-center">
+                   <h1 className=" sm:text-[30px]  md:text-[40px] lg:text-[60px]  font-bold ">Anime Character Search </h1>
 
-                   {errorPopUp && (
-                    <p id="error" className="p-2 bg-red-500 text-white m-2 rounded-2xl">{errorPopUp}</p>
+
+      <div className="flex flex-col mt-[10%]">
+                 {errorPopUp && (
+                    <p id="error" className="font-bold bg-red-500 text-white px-2 py-2 mb-2 rounded-2xl w-[250px]">{errorPopUp}</p>
                    )}
-                   <input className='p-2 border w-[300px] rounded-2xl ' type="text" placeholder='Ur hero ? ' onChange={(e) => setInputSearch(e.target.value)} value={inputSearch} onKeyDown={handleKeyPress}/>
+                   <input className='p-4 border w-[400px] rounded-2xl ' type="text" placeholder='Search By Number ' onChange={(e) => setInputSearch(e.target.value)} value={inputSearch} onKeyDown={handleKeyPress}/>
 
-                   <button  className="bg-green-300 rounded-2xl py-2 mt-2 text-[50px] mt-[10%] hover:bg-green-800 hover:text-white transition-all" onClick={ handleClick }>Find Them !</button>
+                   <button  className="bg-red-400 rounded-2xl py-2 mt-2 text-[50px] mt-[10%] hover:bg-red-800 hover:text-white transition-all" onClick={ handleClick }>Find Them !</button>
+
+      </div>
+              
                </div>
 
-{dataCharacter &&(
+     {/* div jawapan */}
+{dataCharacter.length>0 &&(
 
-   dataCharacter.map((para)=>(
+<div ref={refCard}>
+
+ {dataCharacter.map((para)=>(
 
        <CardHero key={para.mal_id}
           src={para.images.jpg.image_url}
@@ -100,13 +184,14 @@ const handleClick =  async ()=>{
           
           
           />
-   ))
+   ))}
+  
+</div>
+  
 
 )}
 
-{/* <CardHero/> */}
 
-<h1></h1>
           
 
         </div>
